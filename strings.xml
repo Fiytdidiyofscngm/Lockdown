@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Lockdown</string>
+    <string name="a11y_desc">Detects when a locked app is opened and blocks it until your timer ends.</string>
+</resources>
