@@ -22,7 +22,7 @@ class BlockerService : AccessibilityService() {
             if (pkg == packageName || overlay != null || !LockStore.active(this)) return
 
             val blocked = pkg in LockStore.blocked(this)
-                        val guarded = blocked || pkg == "com.android.settings" || pkg == "com.miui.securitycenter" || pkg.contains("packageinstaller") blocked || pkg == "com.android.settings" || pkg.contains("packageinstaller")
+            val guarded = blocked || pkg == "com.android.settings" || pkg == "com.miui.securitycenter" || pkg.contains("packageinstaller")
             if (!guarded) return
 
             showOverlay()
