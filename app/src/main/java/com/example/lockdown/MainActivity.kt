@@ -5,22 +5,23 @@ import android.app.AlertDialog
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.text.InputType
 import android.view.ViewGroup
 import android.widget.*
 
 class MainActivity : Activity() {
-    private val h = Handler(Looper.getMainLooper())
 
     override fun onResume() { super.onResume(); build() }
-    override fun onPause() { super.onPause(); h.removeCallbacksAndMessages(null) }
 
-    if (LockStore.active(this)) { toast("Lock active"); finishAndRemoveTask(); return }
+    private fun build() {
+        if (LockStore.active(this)) {
+            toast("Lock active")
+            finishAndRemoveTask()
+            return
+        }
+
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(32, 48, 32, 32) }
         root.addView(TextView(this).apply { text = "Lockdown"; textSize = 26f })
 
@@ -74,19 +75,6 @@ class MainActivity : Activity() {
             }
         })
         setContentView(root)
-    }
-
-    private fun showCountdown() {
-        val tv = TextView(this).apply { textSize = 30f; gravity = android.view.Gravity.CENTER }
-        setContentView(tv)
-        h.post(object : Runnable {
-            override fun run() {
-                val r = LockStore.remainingMs(this@MainActivity)
-                if (r <= 0) { build(); return }
-                tv.text = "🔒 Lock active\n\n" + LockScreenActivity.fmt(r)
-                h.postDelayed(this, 1000)
-            }
-        })
     }
 
     private fun a11yOn(): Boolean {
