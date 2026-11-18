@@ -20,9 +20,7 @@ class MainActivity : Activity() {
     override fun onResume() { super.onResume(); build() }
     override fun onPause() { super.onPause(); h.removeCallbacksAndMessages(null) }
 
-    private fun build() {
-        if (LockStore.active(this)) { showCountdown(); return }
-
+    if (LockStore.active(this)) { toast("Lock active"); finishAndRemoveTask(); return }
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(32, 48, 32, 32) }
         root.addView(TextView(this).apply { text = "Lockdown"; textSize = 26f })
 
