@@ -52,10 +52,15 @@ class MainActivity : Activity() {
                 android.R.layout.simple_list_item_multiple_choice, apps.map { it.second })
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f)
         }
+        val last = LockStore.lastSelection(this)
+        apps.forEachIndexed { i, a -> if (a.first in last) list.setItemChecked(i, true) }
         root.addView(list)
 
+        val lastMins = LockStore.lastMins(this)
         val mins = EditText(this).apply {
-            hint = "Lock duration in minutes"; inputType = InputType.TYPE_CLASS_NUMBER
+            hint = "Lock duration in minutes"
+            inputType = InputType.TYPE_CLASS_NUMBER
+            if (lastMins > 0) setText(lastMins.toString())
         }
         root.addView(mins)
         root.addView(Button(this).apply {
