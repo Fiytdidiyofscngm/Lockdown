@@ -4,7 +4,6 @@ import android.accessibilityservice.AccessibilityService
 import android.app.ActivityManager
 import android.graphics.Color
 import android.graphics.PixelFormat
-import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
@@ -15,28 +14,6 @@ import android.widget.TextView
 class BlockerService : AccessibilityService() {
     private val h = Handler(Looper.getMainLooper())
     private var overlay: TextView? = null
-    private var bar: TextView? = null
-
-    private val ticker = object : Runnable {
-        override fun run() {
-            try {
-                if (LockStore.active(this@BlockerService)) {
-                    showBar()
-                    bar?.text = "🔒 " + LockScreenActivity.fmt(LockStore.remainingMs(this@BlockerService))
-                } else {
-                    hideBar()
-                }
-            } catch (_: Exception) {
-            }
-            h.postDelayed(this, 1000)
-        }
-    }
-
-    override fun onServiceConnected() {
-        super.onServiceConnected()
-        h.removeCallbacks(ticker)
-        h.post(ticker)
-    }
 
     override fun onAccessibilityEvent(e: AccessibilityEvent?) {
         try {
@@ -56,36 +33,6 @@ class BlockerService : AccessibilityService() {
             }, 1500)
         } catch (_: Exception) {
         }
-    }
-
-    private fun showBar() {
-        if (bar != null) return
-        val tv = TextView(this).apply {
-            textSize = 14f
-            gravity = Gravity.CENTER
-            setTextColor(Color.WHITE)
-            setPadding(32, 8, 32, 8)
-            background = GradientDrawable().apply {
-                setColor(Color.parseColor("#CC111827"))
-                cornerRadius = 48f
-            }
-        }
-        val lp = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            PixelFormat.TRANSLUCENT
-        ).apply { gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL }
-        (getSystemService(WINDOW_SERVICE) as WindowManager).addView(tv, lp)
-        bar = tv
-    }
-
-    private fun hideBar() {
-        bar?.let {
-            try { (getSystemService(WINDOW_SERVICE) as WindowManager).removeView(it) } catch (_: Exception) {}
-        }
-        bar = null
     }
 
     private fun showOverlay() {
@@ -123,7 +70,6 @@ class BlockerService : AccessibilityService() {
     override fun onDestroy() {
         h.removeCallbacksAndMessages(null)
         hideOverlay()
-        hideBar()
         super.onDestroy()
     }
 }
