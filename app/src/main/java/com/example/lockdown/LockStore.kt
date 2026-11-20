@@ -11,6 +11,8 @@ object LockStore {
         val ms = minutes * 60_000L
         p(c).edit()
             .putStringSet("pkgs", pkgs)
+            .putStringSet("last", pkgs)
+            .putLong("lastMins", minutes)
             .putLong("endElapsed", SystemClock.elapsedRealtime() + ms)
             .putLong("startElapsed", SystemClock.elapsedRealtime())
             .putLong("endWall", System.currentTimeMillis() + ms)
@@ -29,4 +31,6 @@ object LockStore {
 
     fun active(c: Context) = remainingMs(c) > 0
     fun blocked(c: Context): Set<String> = p(c).getStringSet("pkgs", emptySet()) ?: emptySet()
+    fun lastSelection(c: Context): Set<String> = p(c).getStringSet("last", emptySet()) ?: emptySet()
+    fun lastMins(c: Context): Long = p(c).getLong("lastMins", 0)
 }
